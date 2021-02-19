@@ -14,7 +14,6 @@ const db = firebase.firestore();
 
 document.getElementById('getAPI').addEventListener('click', getApi);
 document.getElementById('setLatLng').addEventListener('submit', getMyApi);
-document.getElementById('getAPI').addEventListener('click', getApi);
 document.getElementById('getDB').addEventListener('click', getDb);
 document.getElementById('postData').addEventListener('submit', postData);
 document.getElementById('deleteData').addEventListener('click', deleteData);
