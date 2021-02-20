@@ -1,4 +1,4 @@
-function initMap() {
+async function initMap() {
 	const firebaseConfig = {
 		apiKey: "AIzaSyAcNw0Z3v7gHBioPxBoJvV87Pcb_N5bvxM",
 		authDomain: "fujitsu-hackathon-88d5d.firebaseapp.com",
@@ -12,64 +12,65 @@ function initMap() {
 	firebase.initializeApp(firebaseConfig);
 	const db = firebase.firestore();
 	
+
+	let map = undefined;
 	
-	$(document).ready(function () {
-		db.collection("position")
-			.get()
-			.then((querySnapshot) => {
-				querySnapshot.forEach((doc) => {
-					const data = doc.data();
-					const currentPosition = { lat: parseFloat(data.lat), lng: parseFloat(data.lng) };
-					const options = {
-						zoom: 20,
-						center: currentPosition,
-					};
-					const map = new google.maps.Map(document.getElementById("map"), options);
-				});
+	$(document).ready(async function () {
+		const positionSnapshot = await db.collection("position")
+			.get();
+
+		positionSnapshot.forEach((doc) => {
+			const data = doc.data();
+			console.log(data.lat)
+			const currentPosition = { lat: parseFloat(data.lat), lng: parseFloat(data.lng) };
+			const options = {
+				zoom: 20,
+				center: currentPosition,
+			};
+			map = new google.maps.Map(document.getElementById("map"), options);
+			console.log("new Map")
+			console.log(map)
+		});
+
+		const storesSnapshot = await db.collection("stores")
+			.get();
+		storesSnapshot.forEach((doc) => {
+			const data = doc.data();
+			const content = `
+				<ul>
+					<li>${data.name}</li>
+					<li>${data.lat}</li>
+					<li>${data.lng}</li>
+					<li>${data.storeUrl}</li>
+				</ul>
+			`;
+			addMarker({
+				coords: { lat: parseFloat(data.lat), lng: parseFloat(data.lng) },
+				iconUrl: './images/blue-icon.png',
+				content: content
 			});
 		});
-	
-	$(document).ready(function () {
-		db.collection("stores")
-			.get()
-			.then((querySnapshot) => {
-				querySnapshot.forEach((doc) => {
-					const data = doc.data();
-					const content = `
-						<ul>
-							<li>${data.name}</li>
-							<li>${data.lat}</li>
-							<li>${data.lng}</li>
-							<li>${data.storeUrl}</li>
-						</ul>
-					`;
-					addMarker({
-						coords: { lat: parseFloat(data.lat), lng: parseFloat(data.lng) },
-						iconUrl: './images/blue-icon.png',
-						content: content
-					});
-				});
+
+		// Add Marker and infoWindow function
+		function addMarker(props) {
+			console.log("addMarker")
+			console.log(map)
+			const marker = new google.maps.Marker({
+				position: props.coords,
+				map: map,
+				icon: {
+					url: props.iconUrl
+				},
 			});
-		});
 
-	// Add Marker and infoWindow function
-	function addMarker(props){
-		const marker = new google.maps.Marker({
-			position: props.coords,
-			map: map,
-			icon: {
-				url: props.iconUrl
-			},
-		});
+			// info window setting
+			const infoWindow = new google.maps.InfoWindow({
+				content: props.content
+			});
 
-		// info window setting
-		const infoWindow = new google.maps.InfoWindow({
-			content: props.content
-		});
-
-		marker.addListener('click', function(){
-			infoWindow.open(map, marker);
-		});
-	}
+			marker.addListener('click', function () {
+				infoWindow.open(map, marker);
+			});
+		}
+	});
 }
-
