@@ -12,9 +12,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 
-document.getElementById('getDB').addEventListener('click', getDb);
-document.getElementById('deleteData').addEventListener('click', deleteData);
-
 $("#getApiFromDb").submit((e) => {
 	e.preventDefault();
 	if (document.getElementById('address').value) {

@@ -11,20 +11,16 @@
 <body>
 	<div class="ml-4 mr-4" id="container">
 		<h1 class="display-4 mb-4">Enter Your Adress</h1>
-		<div class="d-flex">
-			<button class="btn btn-danger mr-4 mb-4" id="deleteData">Delete DB Data</button>
-			<button class="btn btn-info mr-4 mb-4" id="getDB">Get DB Data</button>
-		</div>
 		<a href="./map.html">→MAP</a>
 		<hr>
-		<div id="position"></div>
-		<div id="output"></div>
 		<form id="getApiFromDb">
 			<div class="form-group">
 				<input type="text" id="address" class="form-control" placeholder="Address">
 			</div>
 			<input type="submit" class="btn btn-warning mb-4" value="Get API Data From DB">
 		</form>
+		<div id="position"></div>
+		<div id="output"></div>
 	</div>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
