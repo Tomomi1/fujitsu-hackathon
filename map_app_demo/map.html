@@ -11,19 +11,22 @@
   </head>
 <body>
   <div class="ml-4 mr-4 mb-4" id="container">
-    <h1 class="display-4 mb-3">Map App</h1>
+    <header class="d-flex justify-content-between">
+      <h1 class="display-5 mb-3">Map App</h1>
+      <div>
+        <button id="login_btn">ログイン</button>
+        <button id="logout_btn">ログアウト</button>
+      </div>
+    </header>
 		<hr>
     <div class="mb-2" id="map"></div>
     <div id="output"></div>
-    <center>
-      <button class="btn btn-info btn-sm mb-1" id="getDB">Put Position Data</button>
-    </center>
     <br>
     <a href="./index.html">←BACK</a>
 	</div>
 
   <script
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmOwq1Yta1Ycz-aQ8sEimYML7TUVM0VjU&callback=initMap&libraries=&v=weekly"
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBdR3ytekYUXL8TXiBqYA2nza7oaGvNk3Q&callback=initMap&libraries=&v=weekly"
     async
   ></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

@@ -44,6 +44,7 @@ function getDb(){
 						<th style="width:200px;">lat</th>
 						<th style="width:200px;">lng</th>
 						<th style="width:200px;">store url</th>
+						<th style="width:200px;">congestion</th>
 					</tr>
 				</thread>
 			</table>
@@ -59,10 +60,11 @@ function getDb(){
 					<table class="table">
 						<tbody>
 							<tr id="store-table-td">
-								<td style="width: 25%;">${data.name}</td>
-								<td style="width: 25%;">${data.lat}</td>
-								<td style="width: 25%;">${data.lng}</td>
-								<td style="width: 25%;">${data.storeUrl}</td>
+								<td style="width: 20%;">${data.name}</td>
+								<td style="width: 20%;">${data.lat}</td>
+								<td style="width: 20%;">${data.lng}</td>
+								<td style="width: 20%;">${data.storeUrl}</td>
+								<td style="width: 20%;">${data.congestion}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -119,7 +121,7 @@ function getApiFromDb(e){
 		});
 
 	const range = 3;
-	const count = 3;
+	const count = 50;
 	const apiUrl = `http://webservice.recruit.co.jp/hotpepper/gourmet/v1/?key=fa9d37307b2c626a&lat=${latitude}&lng=${longitude}&range=${range}&type=lite&count=${count}&format=jsonp`;
 	$.ajax({
 		url: apiUrl,
@@ -135,6 +137,8 @@ function getApiFromDb(e){
 					lat: value.lat,
 					lng: value.lng,
 					storeUrl: value.urls.pc,
+					photoUrl: value.photo.pc.l,
+					congestion: Math.random()
 				})
 				.catch(function (error) {
 					console.error("Error adding document: ", error);
