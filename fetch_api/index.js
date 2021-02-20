@@ -20,10 +20,11 @@ document.getElementById('deleteData').addEventListener('click', deleteData);
 document.getElementById('getApiFromDb').addEventListener('submit', getApiFromDb);
 
 function getApi(){
+	const keyid = 'dd0bc37d5f3fe1ef3a42ee10080ba867';
 	const latitude = 35.673092;
 	const longitude = 139.75992;
 	const range = 3;
-	const apiUrl = `http://webservice.recruit.co.jp/hotpepper/gourmet/v1/?key=fa9d37307b2c626a&lat=${latitude}&lng=${longitude}&range=${range}&type=lite&count=100&format=jsonp`;
+	const apiUrl = "https://api.gnavi.co.jp/PhotoSearchAPI/v3/";
 	$.ajax({
 		url: apiUrl,
 		type: 'GET',
