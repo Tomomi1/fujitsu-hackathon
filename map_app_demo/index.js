@@ -14,7 +14,11 @@ const db = firebase.firestore();
 
 document.getElementById('getDB').addEventListener('click', getDb);
 document.getElementById('deleteData').addEventListener('click', deleteData);
-document.getElementById('getApiFromDb').addEventListener('submit', getApiFromDb);
+document.getElementById('getApiFromDb').addEventListener('submit', () => {
+	if (document.getElementById('address').value) {
+	  getLatLng(document.getElementById('address').value, getApiFromDb(latlng));
+	}
+  })
 
 function getDb(){
 	let positionOut = '<h2 class="mb-4">Position Data</h2>';
@@ -100,13 +104,13 @@ function deleteData(){
 	});
 }
 
-
 // (delete ->) post -> get -> delete
-function getApiFromDb(e){
+function getApiFromDb(latLng){
 	// post
-	e.preventDefault();
-	let latitude = document.getElementById('submit-lat').value;
-	let longitude = document.getElementById('submit-lng').value;
+
+	console.log(latLng) // -> 表示されない
+	let latitude = latLng.lat;
+	let longitude = latLng.lat;
 
 	db.collection("position")
 		.add({

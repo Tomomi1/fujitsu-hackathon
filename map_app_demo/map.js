@@ -11,7 +11,7 @@ async function initMap() {
 	};
 	firebase.initializeApp(firebaseConfig);
 	const db = firebase.firestore();
-  const auth = firebase.auth()
+  // const auth = firebase.auth()
 
 	let map = undefined;
 	let iconUrl = undefined;
