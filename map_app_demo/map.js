@@ -18,8 +18,10 @@ async function initMap() {
 	let description = undefined;
 	let color = undefined;
 	let infoWindowList = [];
-	let cardOutput = undefined;
 	let count = 0;
+	let cardOutput = `
+				<div id="right-content">
+			`;
 
 	$(document).ready(async function () {
 		const positionSnapshot = await db.collection("position")
@@ -68,9 +70,9 @@ async function initMap() {
 				: "./images/buttons/thumbs_down_gray.png"
 
 			const content = `
-				<div class="width: 100%">
+				<div class="row width: 100% justify-content-around">
 					<div class="col-8">
-						<div class="d-flex justify-content-between  align-items-center p-2">
+						<div class="d-flex justify-content-between align-items-center p-2">
 							<h5 id="content" class="display-8 col-8 m-0 font-weight-bold">${data.name}</h5>
 							<div class="d-flex justify-content-end col-4">
 								<div class="d-flex align-items-center mr-4">
@@ -95,15 +97,23 @@ async function initMap() {
 						</ul>
 						<img src="${data.photoUrl}" class="ml-4" width="300" height="300">
 					</div>
-				</div>
 			`;
 
 			count++;
 			if (count<6) {
 				cardOutput += `
-					<div class="card card-body mb-3 col">
-							<h3>${data.name}</h3>
-							<p>${description}</p>
+						<div class="card card-body m-3 ml-0 col">
+							<h5 id="content" class="display-8 m-0 font-weight-bold">${data.name}</h5>
+									<p id="window-description" style="color: ${color}" class="display-8 ml-4 mt-2 mb-0">${description}</p>
+									<hr class="mt-2">
+									<p class="display-8 ml-4 mb-0">
+										<a id="content" href="${data.storeUrl}">店舗URL</a>
+									</p>
+						</div>
+				`;
+			} else if (count=6){
+				cardOutput += `
+						</div>
 					</div>
 				`;
 			}
@@ -157,9 +167,8 @@ async function initMap() {
 					item.close();
 				})
 				infoWindow.open(map, marker);
-				const output = props.content;
+				const output = props.content + cardOutput;
 				document.getElementById('output').innerHTML = output;
-				document.getElementById('output').innerHTML = cardOutput;
 			});
 		}
 

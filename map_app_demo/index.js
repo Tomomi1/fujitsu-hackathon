@@ -20,14 +20,18 @@ $("#getApiFromDb").submit((e) => {
 })
 
 const getDb = () => {
-	let positionOut = '<h2 class="mb-4">Position Data</h2>';
+	let positionOut = `
+		<hr>
+		<h2 class="mb-4">Position Data</h2>
+		<hr>
+		`;
 	db.collection("position")
 			.get()
 			.then((querySnapshot) => {
 				querySnapshot.forEach((doc) => {
 					const data = doc.data();
 					positionOut += `
-						<ul class="mb-6">
+						<ul class="mb-8">
 							<li>position: { lat: ${data.lat}, lng: ${data.lng} }</li>
 						</ul>
 					`;
@@ -37,7 +41,7 @@ const getDb = () => {
 
 		let output = `
 			<hr>
-			<h2 class="mb-4">Store Data</h2>
+			<h2 class="mb-4 mt-4">Store Data</h2>
 			<table class="table">
 				<thread>
 					<tr>
@@ -99,7 +103,7 @@ const deleteData = async () => {
 	});
 }
 
-// (delete ->) post -> get -> delete
+// delete -> post -> get
 const getApiFromDb = async (latLng) => {
 	// 初期化
 	await deleteData()
