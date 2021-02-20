@@ -109,10 +109,8 @@ function deleteData(){
 // (delete ->) post -> get -> delete
 function getApiFromDb(latLng){
 	// post
-
-	console.log(latLng)
-	let latitude = latLng.lat;
-	let longitude = latLng.lat;
+	let latitude = latLng["lat"];
+	let longitude = latLng["lng"];
 
 	db.collection("position")
 		.add({
