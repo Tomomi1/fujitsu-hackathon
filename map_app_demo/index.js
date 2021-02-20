@@ -22,10 +22,9 @@ $("#getApiFromDb").submit((e) => {
 	}
 })
 
-function getDb(){
+const getDb = () => {
 	let positionOut = '<h2 class="mb-4">Position Data</h2>';
-	$(document).ready(function () {
-		db.collection("position")
+	db.collection("position")
 			.get()
 			.then((querySnapshot) => {
 				querySnapshot.forEach((doc) => {
@@ -38,7 +37,6 @@ function getDb(){
 				});
 				document.getElementById('position').innerHTML = positionOut;
 			});
-		});
 
 		let output = `
 			<hr>
@@ -56,8 +54,7 @@ function getDb(){
 			</table>
 		`;
 
-	$(document).ready(function () {
-		db.collection("stores")
+	db.collection("stores")
 			.get()
 			.then((querySnapshot) => {
 				querySnapshot.forEach((doc) => {
@@ -78,12 +75,11 @@ function getDb(){
 				});
 				document.getElementById('output').innerHTML = output;
 			});
-		});
 }
 
 
-function deleteData(){
-	db.collection("stores").get().then(function(querySnapshot) {
+const deleteData = async () => {
+	await db.collection("stores").get().then(function(querySnapshot) {
 		querySnapshot.forEach(function(doc) {
 			console.log(doc.id, " => ", doc.data());
 			db.collection("stores").doc(doc.id).delete().then(function() {
@@ -94,7 +90,7 @@ function deleteData(){
 		});
 	});
 
-	db.collection("position").get().then(function(querySnapshot) {
+	await db.collection("position").get().then(function(querySnapshot) {
 		querySnapshot.forEach(function(doc) {
 			console.log(doc.id, " => ", doc.data());
 			db.collection("position").doc(doc.id).delete().then(function() {
@@ -107,7 +103,10 @@ function deleteData(){
 }
 
 // (delete ->) post -> get -> delete
-function getApiFromDb(latLng){
+const getApiFromDb = async (latLng) => {
+	// 初期化
+	await deleteData()
+
 	// post
 	let latitude = latLng["lat"];
 	let longitude = latLng["lng"];
@@ -127,7 +126,7 @@ function getApiFromDb(latLng){
 	const range = 3;
 	const count = 50;
 	const apiUrl = `http://webservice.recruit.co.jp/hotpepper/gourmet/v1/?key=fa9d37307b2c626a&lat=${latitude}&lng=${longitude}&range=${range}&type=lite&count=${count}&format=jsonp`;
-	$.ajax({
+	await $.ajax({
 		url: apiUrl,
 		type: 'GET',
 		dataType: 'jsonp',
@@ -154,6 +153,4 @@ function getApiFromDb(latLng){
 	// get
 	getDb();
 	console.log("GET COMPLETE")
-
-	// deleteはなぜか一番最後に行われるので手動
 }
