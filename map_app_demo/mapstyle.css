@@ -1,0 +1,10 @@
+#map {
+    height: 430px;
+    width: 100%;
+  }
+
+#getDB {
+  margin-block-start: 1.3em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+}

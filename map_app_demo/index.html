@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Fetch API</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+	<link rel="icon" type="image/png" href="./images/icons8.png" />
+	<link rel="stylesheet" type="text/css" href="./style.css" />
+</head>
+<body>
+	<div class="ml-4 mr-4" id="container">
+		<h1 class="display-4 mb-4">Fetch API</h1>
+		<div class="d-flex">
+			<button class="btn btn-danger mr-4 mb-4" id="deleteData">Delete DB Data</button>
+			<button class="btn btn-info mr-4 mb-4" id="getDB">Get DB Data</button>
+		</div>
+		<a href="./map.html">→MAP</a>
+		<hr>
+		<div id="position"></div>
+		<div id="output"></div>
+		<form id="getApiFromDb">
+			<div class="form-group">
+				<input type="text" id="submit-lat" class="form-control" placeholder="Latitude">
+			</div>
+			<div class="form-group">
+				<input type="text" id="submit-lng" class="form-control" placeholder="Longitude">
+			</div>
+			<input type="submit" class="btn btn-warning mb-4" value="Get API Data From DB">
+		</form>
+	</div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-firestore.js"></script>
+	<script src="index.js"></script>
+</body>
+</html>

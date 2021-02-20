@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+    <link rel="icon" type="image/png" href="./images/icons8.png" />
+    <link rel="stylesheet" type="text/css" href="./mapstyle.css" />
+    <script src="./map.js"></script>
+  </head>
+<body>
+  <div class="ml-4 mr-4 mb-4" id="container">
+    <h1 class="display-4 mb-3">Map App</h1>
+		<hr>
+    <div class="mb-2" id="map"></div>
+    <div id="output"></div>
+    <center>
+      <button class="btn btn-info btn-sm mb-1" id="getDB">Put Position Data</button>
+    </center>
+    <br>
+    <a href="./index.html">←BACK</a>
+	</div>
+
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBmOwq1Yta1Ycz-aQ8sEimYML7TUVM0VjU&callback=initMap&libraries=&v=weekly"
+    async
+  ></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-firestore.js"></script>
+</body>
+</html>
