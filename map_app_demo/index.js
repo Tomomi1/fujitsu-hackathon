@@ -1,12 +1,11 @@
 const firebaseConfig = {
-	apiKey: "AIzaSyAcNw0Z3v7gHBioPxBoJvV87Pcb_N5bvxM",
-	authDomain: "fujitsu-hackathon-88d5d.firebaseapp.com",
-	databaseURL: "https://fujitsu-hackathon-88d5d-default-rtdb.firebaseio.com",
-	projectId: "fujitsu-hackathon-88d5d",
-	storageBucket: "fujitsu-hackathon-88d5d.appspot.com",
-	messagingSenderId: "848966983003",
-	appId: "1:848966983003:web:426d4eed4f9ee9d9a0ce7e",
-	measurementId: "G-X0TQNNYVCJ"
+	apiKey: "AIzaSyBmOwq1Yta1Ycz-aQ8sEimYML7TUVM0VjU",
+    authDomain: "fujitsu-hackathon-304810.firebaseapp.com",
+    projectId: "fujitsu-hackathon-304810",
+    storageBucket: "fujitsu-hackathon-304810.appspot.com",
+    messagingSenderId: "260793951528",
+    appId: "1:260793951528:web:bdeaa52ae55ded36559c1d",
+    measurementId: "G-MG95EFLJKK"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
