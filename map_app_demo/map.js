@@ -26,20 +26,33 @@ async function initMap() {
 	document.getElementById("login_btn").style.display = show;
 	document.getElementById("logout_btn").style.display = hidden;
 
-	let selfEvaluation
+	let evaluation = [];
 	db.collection('evaluation').onSnapshot((collection) => {
 		const user = auth.currentUser;
-		selfEvaluation = user ? collection.docs
+		const storeId = document.getElementById("store").dataset.id;
+
+		if (storeId) {
+			const storeEva = collection.docs.filter((doc) => doc.data().storeId === storeId);
+			console.log(storeEva.filter((doc) => doc.data().liked === true))
+			console.log(storeEva.filter((doc) => doc.data().liked === false))
+			const allLikeCount = storeEva.filter((doc) => doc.data().liked === true).length;
+			const allDislikeCount = storeEva.filter((doc) => doc.data().liked === false).length;
+
+			document.getElementById("thumbs-up-count").innerHTML = allLikeCount;
+			document.getElementById("thumbs-down-count").innerHTML = allDislikeCount;
+		}
+
+
+		evaluation = user ? collection.docs
 			.filter((doc) => doc.data().author === user.uid)
 			.map((doc) => doc.data())
 			: []
 		// 表示中の店舗の評価情報(self)が存在するか
-		const storeId = document.getElementById("store").dataset.id;
-		const muyEva = selfEvaluation.find(x => x.storeId === storeId)
-		if (muyEva) {
+		const myEva = evaluation.find(x => x.storeId === storeId)
+		if (myEva) {
 			const thumbsUpImg = document.getElementById("thumbs-up-img").src;
 			const thumbsDownImg = document.getElementById("thumbs-down-img").src;
-			if (muyEva.liked) {
+			if (myEva.liked) {
 				// likeの場合
 				if (thumbsUpImg.includes('gray')) {
 					document.getElementById("thumbs-up-img").src = thumbsUpImg.split('gray').join('blue');
@@ -103,20 +116,22 @@ async function initMap() {
 					<h5 id="window-description" style="color: ${color}" class="display-8 mt-3 mb-0">${description}</h5>
 				`;
 
-			const storeEvaluation = selfEvaluation.filter(x => x.storeId === data.id)
+			const storeEvaluation = evaluation.filter(x => x.storeId === data.id)
 			const likeCount = storeEvaluation.filter(x => x.liked === true).length
 			const dislikeCount = storeEvaluation.filter(x => x.liked === false).length
 
 			const thumbsUp = auth.currentUser
-				&& storeEvaluation.filter(x => x.author === auth.currentUser.uid)
-					.filter(x => x.liked === true)
+				&& storeEvaluation.some(x =>
+					x.author === auth.currentUser.uid &&
+					x.liked === true )
 					? "./images/buttons/thumbs_up_blue.png"
 					: "./images/buttons/thumbs_up_gray.png"
-				const thumbsDown = auth.currentUser
-				&& storeEvaluation.filter(x => x.author === auth.currentUser.uid)
-					.filter(x => x.liked === false)
-					? "./images/buttons/thumbs_down_blue.png"
-					: "./images/buttons/thumbs_down_gray.png"
+			const thumbsDown = auth.currentUser
+				&& storeEvaluation.some(x =>
+					x.author === auth.currentUser.uid &&
+					x.liked === false )
+				? "./images/buttons/thumbs_down_blue.png"
+				: "./images/buttons/thumbs_down_gray.png"
 
 			const content = `
 				<div class="row width: 100% justify-content-around">
@@ -128,13 +143,13 @@ async function initMap() {
 									<button class="btn ml=30" id="thumbs-up">
 										<img id="thumbs-up-img" src=${thumbsUp} alt="thumbs_up"">
 									</button>
-									<p class="m-0">${likeCount}</p>
+									<p id="thumbs-up-count" class="m-0">${likeCount}</p>
 								</div>
 								<div class="d-flex align-items-center mr-4">
 									<button class="btn ml=30" id="thumbs-down">
 										<img id="thumbs-down-img" src=${thumbsDown} alt="thumbs_down">
 									</button>
-									<p class="m-0">${dislikeCount}</p>
+									<p id="thumbs-down-count" class="m-0">${dislikeCount}</p>
 								</div>
 							</div>
 						</div>
@@ -168,6 +183,7 @@ async function initMap() {
 			}
 
 			addMarker({
+				id: doc.id,
 				coords: { lat: parseFloat(data.lat), lng: parseFloat(data.lng) },
 				iconUrl: iconUrl,
 				content: content,
@@ -194,13 +210,53 @@ async function initMap() {
 			});
 			infoWindowList = [...infoWindowList, infoWindow];
 
-			marker.addListener('click', function () {
+			marker.addListener('click', async function () {
 				infoWindowList.forEach(item => {
 					item.close();
 				})
 				infoWindow.open(map, marker);
 				const output = props.content + cardOutput;
 				document.getElementById('output').innerHTML = output;
+
+				// いいね数の取得、反映
+				const likeItem = [];
+				const dislikeItem = [];
+				const qs = await db.collection('evaluation').where("storeId", "==", props.id)
+					.get()
+				qs.forEach((doc) => {
+					if (doc.data().liked === true) {
+						likeItem.push(doc.data());
+					}
+					if (doc.data().liked === false) {
+						dislikeItem.push(doc.data());
+					}
+				});
+				document.getElementById("thumbs-up-count").innerHTML = likeItem.length;
+				document.getElementById("thumbs-down-count").innerHTML = dislikeItem.length;
+				// ボタンの色設定
+				const user = auth.currentUser;
+				if (user) {
+					const thumbsUpImg = document.getElementById("thumbs-up-img").src;
+					const thumbsDownImg = document.getElementById("thumbs-down-img").src;
+					if (likeItem.some(x => x.author === user.uid)) {
+						// likeの場合
+						if (thumbsUpImg.includes('gray')) {
+							document.getElementById("thumbs-up-img").src = thumbsUpImg.split('gray').join('blue');
+						}
+						if (thumbsDownImg.includes('blue')) {
+							document.getElementById("thumbs-down-img").src = thumbsDownImg.split('blue').join('gray');
+						}
+					}
+					if (dislikeItem.some(x => x.author === user.uid)) {
+						// dislikeの場合
+						if (thumbsUpImg.includes('blue')) {
+							document.getElementById("thumbs-up-img").src = thumbsUpImg.split('blue').join('gray');
+						}
+						if (thumbsDownImg.includes('gray')) {
+							document.getElementById("thumbs-down-img").src = thumbsDownImg.split('gray').join('blue');
+						}
+					}
+				}
 			});
 		}
 
@@ -220,10 +276,10 @@ async function initMap() {
 				alert("ログインしてください");
 				return;
 			}
-			console.log(selfEvaluation)
+			console.log(user.displayName)
 			const storeId = document.getElementById("store").dataset.id;
 			if (!storeId) return;
-			const evaluated = selfEvaluation.filter(x => x.storeId === storeId)
+			const evaluated = evaluation.filter(x => x.storeId === storeId)
 				.filter(x => x.author === user.uid)
 			// すでに評価済みの場合
 			if (evaluated.length) {
