@@ -22,7 +22,7 @@ $("#getApiFromDb").submit((e) => {
 const getDb = () => {
 	let positionOut = `
 		<hr>
-		<h2 class="mb-4">Position Data</h2>
+		<h2 class="mb-4">＜位置情報＞</h2>
 		<hr>
 		`;
 	db.collection("position")
@@ -32,7 +32,7 @@ const getDb = () => {
 					const data = doc.data();
 					positionOut += `
 						<ul class="mb-8">
-							<li>position: { lat: ${data.lat}, lng: ${data.lng} }</li>
+							<li>緯度: ${data.lat}, 経度: ${data.lng}</li>
 						</ul>
 					`;
 				});
@@ -41,15 +41,15 @@ const getDb = () => {
 
 		let output = `
 			<hr>
-			<h2 class="mb-4 mt-4">Store Data</h2>
+			<h2 class="mb-4 mt-4">＜近辺店舗情報＞</h2>
 			<table class="table">
 				<thread>
 					<tr>
-						<th style="width:200px;">Store Name</th>
-						<th style="width:200px;">lat</th>
-						<th style="width:200px;">lng</th>
-						<th style="width:200px;">store url</th>
-						<th style="width:200px;">congestion</th>
+						<th style="width:200px;">店舗名称</th>
+						<th style="width:200px;">緯度</th>
+						<th style="width:200px;">経度</th>
+						<th style="width:200px;">店舗URL</th>
+						<th style="width:200px;">混雑状況</th>
 					</tr>
 				</thread>
 			</table>

@@ -1,13 +1,12 @@
 async function initMap() {
 	const firebaseConfig = {
-		apiKey: "AIzaSyAcNw0Z3v7gHBioPxBoJvV87Pcb_N5bvxM",
-		authDomain: "fujitsu-hackathon-88d5d.firebaseapp.com",
-		databaseURL: "https://fujitsu-hackathon-88d5d-default-rtdb.firebaseio.com",
-		projectId: "fujitsu-hackathon-88d5d",
-		storageBucket: "fujitsu-hackathon-88d5d.appspot.com",
-		messagingSenderId: "848966983003",
-		appId: "1:848966983003:web:426d4eed4f9ee9d9a0ce7e",
-		measurementId: "G-X0TQNNYVCJ"
+		apiKey: "AIzaSyBzCSU7FmruYmLsRjgL6o0_61AuX7BLHdw",
+		authDomain: "team-h.firebaseapp.com",
+		projectId: "team-h",
+		storageBucket: "team-h.appspot.com",
+		messagingSenderId: "187492545462",
+		appId: "1:187492545462:web:0a7c23abe2efc4494b8717",
+		measurementId: "G-BGSR3F25EG"
 	};
 	firebase.initializeApp(firebaseConfig);
 	const db = firebase.firestore();
