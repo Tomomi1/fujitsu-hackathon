@@ -26,13 +26,39 @@ async function initMap() {
 	document.getElementById("login_btn").style.display = show;
 	document.getElementById("logout_btn").style.display = hidden;
 
-	let evaluation
+	let selfEvaluation
 	db.collection('evaluation').onSnapshot((collection) => {
 		const user = auth.currentUser;
-		evaluation = user ? collection.docs
+		selfEvaluation = user ? collection.docs
 			.filter((doc) => doc.data().author === user.uid)
 			.map((doc) => doc.data())
 			: []
+		// 表示中の店舗の評価情報(self)が存在するか
+		const storeId = document.getElementById("store").dataset.id;
+		const muyEva = selfEvaluation.find(x => x.storeId === storeId)
+		if (muyEva) {
+			const thumbsUpImg = document.getElementById("thumbs-up-img").src;
+			const thumbsDownImg = document.getElementById("thumbs-down-img").src;
+			if (muyEva.liked) {
+				// likeの場合
+				if (thumbsUpImg.includes('gray')) {
+					document.getElementById("thumbs-up-img").src = thumbsUpImg.split('gray').join('blue');
+				}
+				if (thumbsDownImg.includes('blue')) {
+					document.getElementById("thumbs-down-img").src = thumbsDownImg.split('blue').join('gray');
+				}
+			} else {
+				// dislikeの場合
+				if (thumbsUpImg.includes('blue')) {
+					document.getElementById("thumbs-up-img").src = thumbsUpImg.split('blue').join('gray');
+				}
+				if (thumbsDownImg.includes('gray')) {
+					document.getElementById("thumbs-down-img").src = thumbsDownImg.split('gray').join('blue');
+				}
+			}
+			console.log(document.getElementById("thumbs-up-img").src);
+			console.log(document.getElementById("thumbs-down-img").src);
+		}
 	});
 
 	$(document).ready(async function () {
@@ -77,7 +103,7 @@ async function initMap() {
 					<h5 id="window-description" style="color: ${color}" class="display-8 mt-3 mb-0">${description}</h5>
 				`;
 
-			const storeEvaluation = evaluation.filter(x => x.storeId === data.id)
+			const storeEvaluation = selfEvaluation.filter(x => x.storeId === data.id)
 			const likeCount = storeEvaluation.filter(x => x.liked === true).length
 			const dislikeCount = storeEvaluation.filter(x => x.liked === false).length
 
@@ -100,13 +126,13 @@ async function initMap() {
 							<div id="store" data-id="${data.id}" class="d-flex justify-content-end col-4">
 								<div class="d-flex align-items-center mr-4">
 									<button class="btn ml=30" id="thumbs-up">
-										<img src=${thumbsUp} alt="thumbs_up"">
+										<img id="thumbs-up-img" src=${thumbsUp} alt="thumbs_up"">
 									</button>
 									<p class="m-0">${likeCount}</p>
 								</div>
 								<div class="d-flex align-items-center mr-4">
 									<button class="btn ml=30" id="thumbs-down">
-										<img src=${thumbsDown} alt="thumbs_down">
+										<img id="thumbs-down-img" src=${thumbsDown} alt="thumbs_down">
 									</button>
 									<p class="m-0">${dislikeCount}</p>
 								</div>
@@ -194,10 +220,10 @@ async function initMap() {
 				alert("ログインしてください");
 				return;
 			}
-			console.log(evaluation)
+			console.log(selfEvaluation)
 			const storeId = document.getElementById("store").dataset.id;
 			if (!storeId) return;
-			const evaluated = evaluation.filter(x => x.storeId === storeId)
+			const evaluated = selfEvaluation.filter(x => x.storeId === storeId)
 				.filter(x => x.author === user.uid)
 			// すでに評価済みの場合
 			if (evaluated.length) {
