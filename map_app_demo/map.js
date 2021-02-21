@@ -1,18 +1,18 @@
-async function initMap() {
-	const firebaseConfig = {
-		apiKey: "AIzaSyAcNw0Z3v7gHBioPxBoJvV87Pcb_N5bvxM",
-		authDomain: "fujitsu-hackathon-88d5d.firebaseapp.com",
-		databaseURL: "https://fujitsu-hackathon-88d5d-default-rtdb.firebaseio.com",
-		projectId: "fujitsu-hackathon-88d5d",
-		storageBucket: "fujitsu-hackathon-88d5d.appspot.com",
-		messagingSenderId: "848966983003",
-		appId: "1:848966983003:web:426d4eed4f9ee9d9a0ce7e",
-		measurementId: "G-X0TQNNYVCJ"
-	};
-	firebase.initializeApp(firebaseConfig);
-	const db = firebase.firestore();
-  // const auth = firebase.auth()
+const firebaseConfig = {
+	apiKey: "AIzaSyAcNw0Z3v7gHBioPxBoJvV87Pcb_N5bvxM",
+	authDomain: "fujitsu-hackathon-88d5d.firebaseapp.com",
+	databaseURL: "https://fujitsu-hackathon-88d5d-default-rtdb.firebaseio.com",
+	projectId: "fujitsu-hackathon-88d5d",
+	storageBucket: "fujitsu-hackathon-88d5d.appspot.com",
+	messagingSenderId: "848966983003",
+	appId: "1:848966983003:web:426d4eed4f9ee9d9a0ce7e",
+	measurementId: "G-X0TQNNYVCJ"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth()
 
+async function initMap() {
 	let map = undefined;
 	let iconUrl = undefined;
 	let description = undefined;
@@ -22,6 +22,19 @@ async function initMap() {
 	let cardOutput = `
 				<div id="right-content">
 			`;
+	const show = "block";
+	const hidden = "none";
+	document.getElementById("login_btn").style.display = show;
+	document.getElementById("logout_btn").style.display = hidden;
+
+	let evaluation
+	db.collection('evaluation').onSnapshot((collection) => {
+		const user = auth.currentUser;
+		evaluation = user ? collection.docs
+			.filter((doc) => doc.data().author === user.uid)
+			.map((doc) => doc.data())
+			: []
+	});
 
 	$(document).ready(async function () {
 		const positionSnapshot = await db.collection("position")
@@ -42,7 +55,10 @@ async function initMap() {
 		const storesSnapshot = await db.collection("stores")
 			.get();
 		storesSnapshot.forEach((doc) => {
-			const data = doc.data();
+			const data = {
+				...doc.data(),
+				id: doc.id
+			};
 			if (data.congestion <= 0.7) {
 				iconUrl = './images/blue-icon.png';
 				description = "〇 空いています";
@@ -62,30 +78,38 @@ async function initMap() {
 					<h5 id="window-description" style="color: ${color}" class="display-8 mt-3 mb-0">${description}</h5>
 				`;
 
-			const thumbsUp = true
-				? "./images/buttons/thumbs_up_blue.png"
-				: "./images/buttons/thumbs_up_gray.png"
-			const thumbsDown = true
-				? "./images/buttons/thumbs_down_blue.png"
-				: "./images/buttons/thumbs_down_gray.png"
+			const storeEvaluation = evaluation.filter(x => x.storeId === data.id)
+			const likeCount = storeEvaluation.filter(x => x.liked === true).length
+			const dislikeCount = storeEvaluation.filter(x => x.liked === false).length
+
+			const thumbsUp = auth.currentUser
+				&& storeEvaluation.filter(x => x.author === auth.currentUser.uid)
+					.filter(x => x.liked === true)
+					? "./images/buttons/thumbs_up_blue.png"
+					: "./images/buttons/thumbs_up_gray.png"
+				const thumbsDown = auth.currentUser
+				&& storeEvaluation.filter(x => x.author === auth.currentUser.uid)
+					.filter(x => x.liked === false)
+					? "./images/buttons/thumbs_down_blue.png"
+					: "./images/buttons/thumbs_down_gray.png"
 
 			const content = `
 				<div class="row width: 100% justify-content-around">
 					<div class="col-8">
 						<div class="d-flex justify-content-between align-items-center p-2">
 							<h5 id="content" class="display-8 col-8 m-0 font-weight-bold">${data.name}</h5>
-							<div class="d-flex justify-content-end col-4">
+							<div id="store" data-id="${data.id}" class="d-flex justify-content-end col-4">
 								<div class="d-flex align-items-center mr-4">
 									<button class="btn ml=30" id="thumbs-up">
 										<img src=${thumbsUp} alt="thumbs_up"">
 									</button>
-									<p class="m-0">12</p>
+									<p class="m-0">${likeCount}</p>
 								</div>
 								<div class="d-flex align-items-center mr-4">
 									<button class="btn ml=30" id="thumbs-down">
 										<img src=${thumbsDown} alt="thumbs_down">
 									</button>
-									<p class="m-0">3</p>
+									<p class="m-0">${dislikeCount}</p>
 								</div>
 							</div>
 						</div>
@@ -126,23 +150,6 @@ async function initMap() {
 			});
 		});
 
-		$(document).ready(function () {
-			$("#thumbs-up").on("click", () => {
-				getThumbsUp();
-			});
-			$("#thumbs-down").on("click", () => {
-				getThumbsDown();
-			});
-		});
-
-		function getThumbsUp(){
-			console.log("thumbs-up")
-		}
-
-		function getThumbsDown(){
-			console.log("thumbs-down")
-		}
-
 		// Add Marker and infoWindow function
 		function addMarker(props) {
 			// console.log("addMarker")
@@ -172,14 +179,77 @@ async function initMap() {
 			});
 		}
 
+		// いいね機能
+		$(document).on("click", "#thumbs-up", () => {
+			console.log("thumbs-up")
+			addEvaluation(true);
+		});
+		$(document).on("click", "#thumbs-down", () => {
+			console.log("thumbs-down")
+			addEvaluation(false);
+		});
+
+		const addEvaluation = async (isLiked) => {
+			const user = auth.currentUser;
+			if (!user) {
+				alert("ログインしてください");
+				return;
+			}
+			console.log(evaluation)
+			const storeId = document.getElementById("store").dataset.id;
+			if (!storeId) return;
+			const evaluated = evaluation.filter(x => x.storeId === storeId)
+				.filter(x => x.author === user.uid)
+			// すでに評価済みの場合
+			if (evaluated.length) {
+				if (evaluated[0].liked === isLiked) {
+					console.log('評価済み');
+				} else {
+					console.log('未評価');
+					const targetIdList = []
+					const qs = await db.collection('evaluation').where("storeId", "==", storeId)
+						.get()
+					qs.forEach((doc) => {
+						targetIdList.push({id: doc.id, ...doc.data()});
+					})
+					targetIdList.forEach(x => {
+						const evaluationRef = db.collection("evaluation").doc(x.id);
+						evaluationRef.update({storeId: x.storeId, author: x.author, liked: isLiked})
+					})
+				}
+				return;
+			}
+
+			// まだ評価していない場合
+			db.collection('evaluation').add({
+				liked: isLiked,
+				storeId: document.getElementById("store").dataset.id,
+				author: user.uid
+			})
+		}
+
 		// ユーザー認証
 		const handleLogin = async () => {
 			const provider = new firebase.auth.GoogleAuthProvider();
 			if (!provider) return
 			try {
-				await auth.signInWithPopup(provider);
+				await auth.signInWithPopup(provider).catch(function (error) {
+					// Handle Errors here.
+					var errorCode = error.code;
+					console.log(errorCode);
+					alert(errorCode);
+
+					var errorMessage = error.message;
+					console.log(errorMessage);
+					alert(errorMessage);
+				});
+				// ログイン中のユーザー取得
 				const user = auth.currentUser;
-				if (user) await push(`/basePatient/${user.uid}`);
+				if (user) {
+					document.getElementById("user_email").innerHTML = user.email;
+				  document.getElementById("login_btn").style.display = hidden;
+					document.getElementById("logout_btn").style.display = show;
+				}
 			} catch (error) {
 				console.log(error);
 			}
@@ -187,6 +257,7 @@ async function initMap() {
 
 		const handleLogout = async () => {
 			try {
+				document.getElementById("user_email").innerHTML = '';
 				await auth.signOut();
 				console.log('logout');
 			} catch (error) {
